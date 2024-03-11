@@ -16,8 +16,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration) {
-        this.authenticationConfiguration=authenticationConfiguration;}
+    private final JWTUtil jwtUtil;
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration,JWTUtil jwtUtil) {
+        this.authenticationConfiguration=authenticationConfiguration;
+        this.jwtUtil=jwtUtil;}
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception{
@@ -31,7 +33,8 @@ public class SecurityConfig {
         http.authorizeHttpRequests((au)->au
                 .requestMatchers("/","/login","/join").permitAll()
                 .anyRequest().authenticated());
-        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
+        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration),jwtUtil), UsernamePasswordAuthenticationFilter.class);
         http.sessionManagement(session->session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
