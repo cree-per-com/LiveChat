@@ -13,7 +13,7 @@ public class JoinController {
 
     public JoinController(JoinService joinService) {this.joinService=joinService;}
 
-    @PostMapping("/join")
+    @PostMapping("/joinProc")
     public ResponseEntity<String> JoinProc(JoinDTO dto) {
         joinService.joinProc(dto);
         return new ResponseEntity<>(HttpStatus.OK);
