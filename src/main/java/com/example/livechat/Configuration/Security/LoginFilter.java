@@ -1,5 +1,6 @@
-package com.example.livechat.Configuration;
+package com.example.livechat.Configuration.Security;
 
+import com.example.livechat.Configuration.Security.JWTUtil;
 import com.example.livechat.DAO.MyUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,5 +1,8 @@
-package com.example.livechat.Configuration;
+package com.example.livechat.Configuration.Security;
 
+import com.example.livechat.Configuration.Security.JWTFilter;
+import com.example.livechat.Configuration.Security.JWTUtil;
+import com.example.livechat.Configuration.Security.LoginFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

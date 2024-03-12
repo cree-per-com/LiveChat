@@ -1,4 +1,4 @@
-package com.example.livechat.Configuration;
+package com.example.livechat.Configuration.Security;
 
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +30,7 @@ public class JWTUtil {
 
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
-
+//사용자가 성공적으로 로그인했을 시 토큰 생성
     public String createJwt(String username, String role, Long expiredMs) {
 
         return Jwts.builder()
