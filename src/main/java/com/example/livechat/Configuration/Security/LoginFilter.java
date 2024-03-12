@@ -12,6 +12,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -35,7 +36,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     protected void successfulAuthentication(HttpServletRequest request,
                                          HttpServletResponse response,
                                          FilterChain chain,
-                                         Authentication au) {
+                                         Authentication au) throws IOException {
         MyUserDetails myUserDetails = (MyUserDetails) au.getPrincipal();
         String username = myUserDetails.getUsername();
         Collection<? extends GrantedAuthority> authorities = au.getAuthorities();
@@ -45,6 +46,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String role = auth.getAuthority();
         String token = jwtUtil.createJwt(username,role,60*60*10L);
         response.addHeader("Authorization","Bearer"+token);
+
+        //defaultSuccessUrl 직접 구현
+        response.sendRedirect("menu.html");
     }
 
     @Override

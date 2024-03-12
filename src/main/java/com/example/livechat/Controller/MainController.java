@@ -11,4 +11,7 @@ public class MainController  {
 
     @GetMapping("/login")
     public String LoginPage() {return "login";}
+
+    @GetMapping("/join")
+    public String JoinPage() {return "join";}
 }
