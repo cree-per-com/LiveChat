@@ -14,4 +14,9 @@ public class MainController  {
 
     @GetMapping("/join")
     public String JoinPage() {return "join";}
+
+    @GetMapping("/menu")
+    public String menuPage() {
+        return "menu";
+    }
 }

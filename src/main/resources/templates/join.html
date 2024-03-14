@@ -5,10 +5,31 @@
     <title>회원 가입</title>
 </head>
 <body>
-<form class="joinForm" action="/joinProc" method="post">
+<form class="joinForm">
     <input type="text" id="username" name="username" placeholder="Username" />
     <input type="password" id="password" name="password" placeholder="Password" />
     <button type="submit">회원 가입</button>
 </form>
+<script>
+    const joinForm = document.querySelector('.joinForm');
+    joinForm.addEventListener('submit',function (event) {
+        event.preventDefault();
+
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const data = { username: username, password: password };
+
+        fetch('/joinProc', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data),
+        })
+            .then(response => response.json()) // JSON 응답 처리
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => console.error('Error:', error)); // 에러 처리
+    })
+</script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-package com.example.livechat.Configuration;
+package com.example.livechat.Configuration.WebSocket;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

@@ -48,7 +48,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.addHeader("Authorization","Bearer"+token);
 
         //defaultSuccessUrl 직접 구현
-        response.sendRedirect("menu.html");
+        response.sendRedirect("/menu");
     }
 
     @Override
