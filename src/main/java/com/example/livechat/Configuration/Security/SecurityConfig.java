@@ -6,6 +6,7 @@ import com.example.livechat.Configuration.Security.LoginFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -30,11 +31,13 @@ public class SecurityConfig {
     }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(au->au.disable());
-        http.formLogin(au->au.disable());
-        http.httpBasic(au->au.disable());
+        http.csrf(au->au.disable())
+            .formLogin(au->au.disable())
+            .httpBasic(au->au.disable())
+            .cors(Customizer.withDefaults());
         http.authorizeHttpRequests((au)->au
-                .requestMatchers("/","/login","/join").permitAll()
+                .requestMatchers("/","/login","/loginProc","/join","/joinProc").permitAll()
+                .requestMatchers("/menu").hasRole("USER")
                 .anyRequest().authenticated());
         http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
         http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration),jwtUtil), UsernamePasswordAuthenticationFilter.class);
