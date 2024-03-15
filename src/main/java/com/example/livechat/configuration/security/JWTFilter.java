@@ -1,7 +1,7 @@
-package com.example.livechat.Configuration.Security;
+package com.example.livechat.configuration.security;
 
-import com.example.livechat.DAO.MyUserDetails;
-import com.example.livechat.Entity.UserEntity;
+import com.example.livechat.dao.MyUserDetails;
+import com.example.livechat.entity.UserEntity;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,5 +46,6 @@ public class JWTFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(autoken);
         //SecurityFilterChain의 다음 필터로 요청을 전달함
         filterChain.doFilter(request, response);
+        response.setHeader("Authorization","Bearer "+token);
     }
 }

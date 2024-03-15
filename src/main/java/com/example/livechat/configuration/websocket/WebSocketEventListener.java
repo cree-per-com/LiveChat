@@ -1,7 +1,7 @@
-package com.example.livechat.Configuration.WebSocket;
+package com.example.livechat.configuration.websocket;
 
-import com.example.livechat.Entity.ChatMessage;
-import com.example.livechat.Entity.MessageType;
+import com.example.livechat.entity.ChatMessage;
+import com.example.livechat.entity.MessageType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;

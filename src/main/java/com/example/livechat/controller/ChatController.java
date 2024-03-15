@@ -1,7 +1,7 @@
-package com.example.livechat.Controller;
+package com.example.livechat.controller;
 
-import com.example.livechat.Entity.ChatMessage;
-import com.example.livechat.Service.ChatService;
+import com.example.livechat.entity.ChatMessage;
+import com.example.livechat.service.ChatService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;

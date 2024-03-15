@@ -1,6 +1,6 @@
-package com.example.livechat.Service;
+package com.example.livechat.service;
 
-import com.example.livechat.Entity.ChatMessage;
+import com.example.livechat.entity.ChatMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;

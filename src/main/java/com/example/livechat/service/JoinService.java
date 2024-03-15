@@ -1,8 +1,8 @@
-package com.example.livechat.Service;
+package com.example.livechat.service;
 
-import com.example.livechat.DAO.JoinDTO;
-import com.example.livechat.DAO.UserRepository;
-import com.example.livechat.Entity.UserEntity;
+import com.example.livechat.dao.JoinDTO;
+import com.example.livechat.dao.UserRepository;
+import com.example.livechat.entity.UserEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 

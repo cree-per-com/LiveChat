@@ -1,6 +1,6 @@
-package com.example.livechat.DAO;
+package com.example.livechat.dao;
 
-import com.example.livechat.Entity.UserEntity;
+import com.example.livechat.entity.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

@@ -1,4 +1,4 @@
-package com.example.livechat.Entity;
+package com.example.livechat.entity;
 
 import lombok.*;
 

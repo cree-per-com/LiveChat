@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+
 </head>
-<body>
 <body>
 <div id="chatbox">
     <!-- 메시지가 표시될 영역 -->
@@ -12,30 +12,11 @@
 <input type="text" id="messageInput" placeholder="메시지를 입력하세요">
 <button id="sendButton">전송</button>
 
-<script src="chat.js"></script> <!-- 웹소켓 및 이벤트 핸들링 로직을 포함하는 외부 JS 파일 -->
-</body>
+
 <script>
-    // 웹소켓 연결 설정
-    var websocket = new WebSocket("ws://서버주소/채팅방경로");
+    import SockJS from 'sockjs-client';
+    import Stomp from 'stompjs';
 
-    // 메시지 전송 함수
-    function sendMessage() {
-        var messageInput = document.getElementById("messageInput");
-        var message = messageInput.value; // 입력 필드에서 메시지 가져오기
-        websocket.send(message); // 웹소켓을 통해 메시지 서버로 전송
-        messageInput.value = ''; // 입력 필드 초기화
-    }
-
-    // 전송 버튼에 이벤트 리스너 추가
-    var sendButton = document.getElementById("sendButton");
-    sendButton.addEventListener("click", sendMessage);
-
-    // 엔터 키를 누를 때 메시지 전송
-    document.getElementById("messageInput").addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-            sendMessage();
-        }
-    });
 </script>
 </body>
 </html>
