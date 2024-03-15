@@ -46,6 +46,5 @@ public class JWTFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(autoken);
         //SecurityFilterChain의 다음 필터로 요청을 전달함
         filterChain.doFilter(request, response);
-        response.setHeader("Authorization","Bearer "+token);
     }
 }
