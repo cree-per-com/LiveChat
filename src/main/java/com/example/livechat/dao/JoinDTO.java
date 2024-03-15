@@ -1,4 +1,4 @@
-package com.example.livechat.DAO;
+package com.example.livechat.dao;
 
 import lombok.Getter;
 import lombok.Setter;

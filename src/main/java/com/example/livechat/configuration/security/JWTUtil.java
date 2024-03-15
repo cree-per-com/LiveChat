@@ -1,4 +1,4 @@
-package com.example.livechat.Configuration.Security;
+package com.example.livechat.configuration.security;
 
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;

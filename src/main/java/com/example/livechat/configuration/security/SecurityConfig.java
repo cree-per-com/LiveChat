@@ -1,8 +1,5 @@
-package com.example.livechat.Configuration.Security;
+package com.example.livechat.configuration.security;
 
-import com.example.livechat.Configuration.Security.JWTFilter;
-import com.example.livechat.Configuration.Security.JWTUtil;
-import com.example.livechat.Configuration.Security.LoginFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,13 +33,14 @@ public class SecurityConfig {
             .httpBasic(au->au.disable())
             .cors(Customizer.withDefaults());
         http.authorizeHttpRequests((au)->au
-                .requestMatchers("/","/login","/loginProc","/join","/joinProc").permitAll()
+                .requestMatchers("/","/login","/loginProc","/join","/joinProc"
+                                ,"/error").permitAll()
                 .requestMatchers("/menu").hasRole("USER")
                 .anyRequest().authenticated());
         http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
         http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration),jwtUtil), UsernamePasswordAuthenticationFilter.class);
         http.sessionManagement(session->session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
         return http.build();
     }
     @Bean
