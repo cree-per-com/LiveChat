@@ -1,9 +1,9 @@
 package com.example.livechat.configuration.websocket;
 
-import com.example.livechat.entity.ChatMessage;
-import com.example.livechat.entity.MessageType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import com.example.livechat.entity.ChatMessage;
+import com.example.livechat.entity.MessageType;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -21,7 +21,10 @@ public class WebSocketEventListener {
         String username = (String)headerAccessor.getSessionAttributes().get("username");
         if (username!=null) {
             log.info("{} 님과의 연결이 끊어졌습니다. ", username);
-            var chatMessage = ChatMessage.builder().type(MessageType.LEAVE).build();
+            var chatMessage = ChatMessage.builder()
+                              .type(MessageType.LEAVE)
+                               .senderName(username)
+                                .build();
             messageTemplate.convertAndSend("/chatroom/public",chatMessage);
         }
 
