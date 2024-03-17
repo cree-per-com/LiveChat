@@ -11,6 +11,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -34,13 +35,15 @@ public class SecurityConfig {
             .cors(Customizer.withDefaults());
         http.authorizeHttpRequests((au)->au
                 .requestMatchers("/","/login","/loginProc","/join","/joinProc"
-                                ,"/error").permitAll()
+                                ,"/error","/favicon.ico").permitAll()
                 .requestMatchers("/menu").hasRole("USER")
                 .anyRequest().authenticated());
-        http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
-        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration),jwtUtil), UsernamePasswordAuthenticationFilter.class);
-        http.sessionManagement(session->session
+        http.sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
+        http.addFilterBefore(new JWTFilter(jwtUtil), BasicAuthenticationFilter.class);
+        http.addFilterBefore(new LoginFilter(authenticationManager(authenticationConfiguration),jwtUtil), UsernamePasswordAuthenticationFilter.class);
+        // LoginFilter를 BasicAuthenticationFilter 이전에 실행되도록 설정
+
         return http.build();
     }
     @Bean
