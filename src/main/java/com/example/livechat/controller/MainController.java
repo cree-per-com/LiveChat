@@ -10,13 +10,16 @@ public class MainController  {
     public String mainPage() {return "main";}
 
     @GetMapping("/login")
-    public String LoginPage() {return "login";}
+    public String loginPage() {return "login";}
 
     @GetMapping("/join")
-    public String JoinPage() {return "join";}
+    public String joinPage() {return "join";}
 
     @GetMapping("/menu")
     public String menuPage() {
         return "menu";
     }
+
+    @GetMapping("/privatechat")
+    public String privateChatPage() {return "privatechatroom";}
 }
