@@ -9,15 +9,15 @@
 <input type="text" id="username" placeholder="Username">
 <input type="password" id="password" placeholder="Password">
 <button onclick="login()">Login</button>
-
+<br><br>
+<div id="welcome"></div>
 <h2>Fetch Protected Resource</h2>
-<button onclick="fetchProtectedResource('http://localhost:8080/menu')">Fetch Resource</button>
-
+<button onclick="fetchProtectedResource('http://localhost:8080/menu')">채팅방 메뉴 바로가기</button>
 <script>
     function login() {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-        const loginUrl = 'http://localhost:8080/loginProc';
+        const loginUrl = 'http://localhost:8080/login';
 
         fetch(loginUrl, {
             method: 'POST',
@@ -26,38 +26,43 @@
             },
             body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
         })
-            .then(response => {
-                // 응답에서 JWT 토큰 추출
-                const authToken = response.headers.get('Authorization');
-                if (authToken) {
-                    // 추출된 토큰을 로컬 스토리지에 저장
-                    localStorage.setItem('authToken', authToken);
-                    alert('Login successful');
-                } else {
-                    alert('Login failed: No token received');
-                }
+            .then(response => response.json())
+            .then(data => {
+
+                localStorage.setItem('authToken',data.authToken);
             })
             .catch(error => {
-                console.error('Login error:', error);
+                console.error('로그인 에러 발생', error);
             });
+    }
+    async function getUsername() {
+        try {
+            const res = await fetch("/username");
+            const json = await res.json();
+            username = json.username;
+        } catch (error) {
+            console.error("Error fetching username:", error);
+        }
     }
 
     function fetchProtectedResource(url) {
         const authToken = localStorage.getItem('authToken');
+        console.log('authToken:', authToken);
+
         if (!authToken) {
-            alert('No auth token found. Please login first.');
+            alert('먼저 로그인해주세요.');
             return;
         }
 
         fetch(url, {
             method: 'GET',
             headers: {
-                'Authorization': authToken
+                'Authorization': `Bearer ${authToken}`
             }
         })
             .then(response => {
                 if (response.ok) {
-                    return response.json(); // JSON 파싱
+                    return response.json();
                 } else {
                     throw new Error('Failed to fetch protected resource');
                 }
@@ -70,6 +75,10 @@
                 console.error('Error fetching protected resource:', error);
             });
     }
+    async function init() {
+        await getUsername();
+    }
+    init();
 </script>
 </body>
 </html>

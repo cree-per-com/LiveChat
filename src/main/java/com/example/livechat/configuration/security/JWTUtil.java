@@ -12,6 +12,7 @@ import java.util.Date;
 @Component
 public class JWTUtil {
     private SecretKey secretKey;
+    String secret = System.getenv("SPRING_JWT_SECRET");
     public JWTUtil(@Value("${SPRING_JWT_SECRET}")String secret) {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
                 Jwts.SIG.HS256.key().build().getAlgorithm());

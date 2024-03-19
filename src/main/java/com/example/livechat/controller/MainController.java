@@ -9,7 +9,7 @@ public class MainController  {
     @GetMapping("/")
     public String mainPage() {return "main";}
 
-    @GetMapping("/login")
+    @GetMapping("/loginpage")
     public String loginPage() {return "login";}
 
     @GetMapping("/join")
