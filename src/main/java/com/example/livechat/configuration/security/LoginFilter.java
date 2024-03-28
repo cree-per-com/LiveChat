@@ -1,24 +1,32 @@
 package com.example.livechat.configuration.security;
 
+import com.example.livechat.dao.MyUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
-@Component
+import java.io.PrintWriter;
+import java.util.Collection;
+import java.util.Iterator;
+
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
+    private final AuthenticationManager authenticationManager;
 
-    private final MySuccessHandler mySuccessHandler;
+    private final JWTUtil jwtUtil;
 
-    public LoginFilter(AuthenticationManager authenticationManager, MySuccessHandler mySuccessHandler) {
-        super.setAuthenticationManager(authenticationManager);
-        this.mySuccessHandler=mySuccessHandler;
+    public LoginFilter(AuthenticationManager authenticationManager,JWTUtil jwtUtil) {
+        this.authenticationManager=authenticationManager;
+        this.jwtUtil = jwtUtil;
+
     }
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -27,7 +35,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String password = obtainPassword(request);
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
       //authenticationManager에게 토큰 전달
-        return getAuthenticationManager().authenticate(authenticationToken);
+        return authenticationManager.authenticate(authenticationToken);
     }
 
     @Override
@@ -35,9 +43,29 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                                             HttpServletResponse response,
                                             FilterChain chain,
                                             Authentication authentication) throws IOException, ServletException {
+        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+        String username = myUserDetails.getUsername();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
+        GrantedAuthority auth = iterator.next();
+        String role = auth.getAuthority();
+        String token = jwtUtil.createJwt(username,role,60*60*10L);
+
+        Cookie jwtCookie = new Cookie("jwtToken", token);
+        jwtCookie.setHttpOnly(true); // JavaScript를 통한 접근 방지
+        jwtCookie.setPath("/"); // 쿠키의 경로 설정
+        response.addCookie(jwtCookie); // 응답에 쿠키 추가
 
 
-        mySuccessHandler.onAuthenticationSuccess(request, response, authentication);
+        response.addHeader("Authorization","Bearer "+token);
+
+        response.setContentType("application/json;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        String jsonResponse = String.format("{\"authToken\": \"%s\"}", token);
+        out.print(jsonResponse);
+        out.flush();
+
+       // mySuccessHandler.onAuthenticationSuccess(request, response, authentication);
     }
 
 
@@ -45,7 +73,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     protected void unsuccessfulAuthentication(HttpServletRequest request,
                                         HttpServletResponse response,
                                         AuthenticationException e) {
-        logger.debug("Authentication failed: " + e.getMessage());
+        logger.debug("LoginFilter : 인증에 실패했습니다. " + e.getMessage());
         response.setStatus(401);
     }
 }

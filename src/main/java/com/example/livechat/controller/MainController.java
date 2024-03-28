@@ -1,6 +1,7 @@
 package com.example.livechat.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
@@ -20,6 +21,7 @@ public class MainController  {
         return "menu";
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/privatechat")
     public String privateChatPage() {return "privatechatroom";}
 }

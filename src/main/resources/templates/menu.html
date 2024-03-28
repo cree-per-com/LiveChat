@@ -7,4 +7,33 @@
 <body>
 <br><a th:href="@{/privatechat}">1:1 채팅 시작하기</a>
 </body>
+<script>
+    function fetchProtectedResource(url) {
+        const authToken = localStorage.getItem('authToken');
+        console.log('authToken:', authToken);
+
+        if (!authToken) {
+            alert('먼저 로그인해주세요.');
+            return;
+        }
+
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    throw new Error('Failed to fetch protected resource');
+                }
+            })
+            .then(html => {
+                document.getElementById('welcome').innerHTML = html;
+            })
+
+    }
+</script>
 </html>

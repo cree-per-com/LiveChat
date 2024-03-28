@@ -1,5 +1,7 @@
 package com.example.livechat.configuration.security;
 
+import org.apache.catalina.filters.CorsFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -25,10 +28,12 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
+    private final CorsConfigurationSource corsConfigurationSource;
+
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, CorsConfigurationSource corsConfigurationSource) {
         this.authenticationConfiguration=authenticationConfiguration;
         this.jwtUtil=jwtUtil;
-
+        this.corsConfigurationSource = corsConfigurationSource;
     }
 
     @Bean
@@ -40,24 +45,17 @@ public class SecurityConfig {
         http.csrf(au->au.disable())
             .formLogin(au->au.disable())
             .httpBasic(au->au.disable())
-                .cors(cors -> cors.configurationSource(request -> {
-                    CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(Arrays.asList("*")); // 특정 도메인으로 제한하려면 "*" 대신 도메인을 명시하세요.
-                    config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
-                    config.setExposedHeaders(Arrays.asList("Authorization"));
-                    config.setAllowCredentials(true);
-                    return config;
-                }));
+                    .cors(cors -> cors.configurationSource(corsConfigurationSource));
+        http.headers(he->he.httpStrictTransportSecurity(se->se.disable()));
         http.authorizeHttpRequests((au)->au
                 .requestMatchers("/","/loginpage","/login","/join","/joinProc"
-                                ,"/error","/favicon.ico").permitAll()
-                .requestMatchers("/menu").hasRole("USER")
+                                ,"/error","/username","/favicon.ico").permitAll()
+                .requestMatchers("/menu","/privatechat").hasRole("USER")
                 .anyRequest().authenticated());
         http.sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        http.addFilterBefore(new JWTFilter(jwtUtil), BasicAuthenticationFilter.class)
-            .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), new MySuccessHandler(jwtUtil)), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class)
+            .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
     @Bean
