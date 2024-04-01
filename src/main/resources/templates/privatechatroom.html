@@ -1,11 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>Spring Boot WebSocket Chat Application</title>
 </head>
 <style>
     * {
@@ -89,6 +86,37 @@
         background-color: #6db33f;
         box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.12);
         color: #fff;
+    }
+
+    button.accent {
+        background-color: #6db33f;
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.12);
+        color: #fff;
+    }
+
+    #username-page {
+        text-align: center;
+    }
+
+    .username-page-container {
+        background: #fff;
+        box-shadow: 0 1px 11px rgba(0, 0, 0, 0.27);
+        border-radius: 2px;
+        width: 100%;
+        max-width: 500px;
+        display: inline-block;
+        vertical-align: middle;
+        padding: 35px 55px 35px;
+        min-height: 250px;
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        margin: -160px auto 0;
+    }
+
+    .username-page-container .username-submit {
+        margin-top: 10px;
     }
 
 
@@ -213,6 +241,12 @@
             height: calc(100% - 30px);
         }
 
+        .username-page-container {
+            width: auto;
+            margin-left: 15px;
+            margin-right: 15px;
+            padding: 25px;
+        }
 
         #chat-page ul {
             height: calc(100% - 120px);
@@ -240,16 +274,33 @@
     }
 </style>
 <body>
+<noscript>
+    <h2>Sorry! Your browser doesn't support Javascript</h2>
+</noscript>
 
+<div id="username-page">
+    <div class="username-page-container">
+        <h1 class="title">채팅방에서 사용하실 닉네임을 입력해주세요.</h1>
+        <form id="usernameForm" name="usernameForm">
+            <div class="form-group">
+                <label for="name">
+                    <input type="text" id="name" placeholder="Username" autocomplete="off" class="form-control" />
+                </label>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="accent username-submit">채팅 시작하기</button>
+            </div>
+        </form>
+    </div>
+</div>
 
-<div id="chat-page">
+<div id="chat-page" class="hidden">
     <div class="chat-container">
         <div class="chat-header">
-            <h2>1:1 채팅방입니다.</h2>
+            <h2>Spring WebSocket Chat Demo - By Alibou</h2>
         </div>
-        <button type="button" id="start-button">채팅 시작하기</button>
         <div class="connecting">
-            연결 중입니다...
+            Connecting...
         </div>
         <ul id="messageArea">
 
@@ -257,80 +308,45 @@
         <form id="messageForm" name="messageForm">
             <div class="form-group">
                 <div class="input-group clearfix">
-                    <label for="message"><input type="text" id="message" placeholder="메세지를 입력해주세요..." autocomplete="off" class="form-control"/>
-                        <button type="submit" class="primary">Send</button>
+                    <label for="message">
+                        <input type="text" id="message" placeholder="Type a message..." autocomplete="off" class="form-control"/>
                     </label>
+                        <button type="submit" class="primary">Send</button>
                 </div>
             </div>
         </form>
     </div>
 </div>
 
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script>
     'use strict';
 
-    const authToken = localStorage.getItem('authToken');
-    if (authToken) {
-        await fetch('/privatechat', {
-            method: 'GET', // 또는 'POST'
-            headers: {
-                "Authorization": `Bearer ${authToken}`,
-                // 필요한 경우 추가 헤더를 설정할 수 있습니다.
-            }
-        })
-            .then(response => {
-                if (response.ok) {
-                    return response.text(); // 또는 response.text() 등 응답 형식에 맞게 변경
-                }
-                throw new Error('서버로부터 응답을 받는 데 실패했습니다.');
-            })
-            .then(data => {
-                console.log(data);
-                // 데이터 처리 로직
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    }
-
-
-    let chatPage = document.querySelector('#chat-page');
- //   let messageForm = document.querySelector('#messageForm');
-    let messageInput = document.querySelector('#message');
-    let messageArea = document.querySelector('#messageArea');
-    let connectingElement = document.querySelector('.connecting');
+    const usernamePage = document.querySelector('#username-page');
+    const chatPage = document.querySelector('#chat-page');
+    const usernameForm = document.querySelector('#usernameForm');
+    const messageForm = document.querySelector('#messageForm');
+    const messageInput = document.querySelector('#message');
+    const messageArea = document.querySelector('#messageArea');
+    const connectingElement = document.querySelector('.connecting');
 
     let stompClient = null;
-    let username;
+    let username = null;
 
     const colors = [
         '#2196F3', '#32c787', '#00BCD4', '#ff5652',
         '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
     ];
 
-    async function getUsername() {
-        try {
-            const res = await fetch("/username");
-            const json = await res.json();
-            username = json.username;
-        } catch (error) {
-            console.error("Error fetching username:", error);
-        }
-    }
-
-
-    const messageForm = document.getElementById("messageForm");
-    messageForm.addEventListener('submit', sendMessage, true);
-
-
     function connect(event) {
-
+        username = document.querySelector('#name').value.trim();
 
         if(username) {
+            usernamePage.classList.add('hidden');
             chatPage.classList.remove('hidden');
 
-            let socket = new SockJS('/ws');
+            let socket = new SockJS('/ws', null, {withCredentials: true});
             stompClient = Stomp.over(socket);
 
             stompClient.connect({}, onConnected, onError);
@@ -340,8 +356,11 @@
 
 
     function onConnected() {
+        const authToken = localStorage.getItem('authToken');
+        stompClient.send("/app/authenticate", {}, JSON.stringify({authToken: authToken}));
+
         // Subscribe to the Public Topic
-        stompClient.subscribe('/chatroom/public', onMessageReceived);
+        stompClient.subscribe('/topic/public', onMessageReceived);
 
         // Tell your username to the server
         stompClient.send("/app/chat.addUser",
@@ -354,15 +373,15 @@
 
 
     function onError(error) {
-        connectingElement.textContent = '채팅 서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.';
+        connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
         connectingElement.style.color = 'red';
     }
 
 
     function sendMessage(event) {
-        let messageContent = messageInput.value.trim();
+        const messageContent = messageInput.value.trim();
         if(messageContent && stompClient) {
-            let chatMessage = {
+            const chatMessage = {
                 sender: username,
                 content: messageInput.value,
                 type: 'CHAT'
@@ -421,12 +440,8 @@
         return colors[index];
     }
 
+    usernameForm.addEventListener('submit', connect, true)
     messageForm.addEventListener('submit', sendMessage, true)
-    async function init() {
-        await getUsername();
-    }
-    init();
-
 </script>
 </body>
 </html>

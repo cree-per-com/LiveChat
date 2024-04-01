@@ -50,7 +50,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((au)->au
                 .requestMatchers("/","/loginpage","/login","/join","/joinProc"
                                 ,"/error","/username","/favicon.ico").permitAll()
-                .requestMatchers("/menu","/privatechat").hasRole("USER")
+                .requestMatchers("/menu","/privatechat","/ws/**").hasRole("USER")
                 .anyRequest().authenticated());
         http.sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
