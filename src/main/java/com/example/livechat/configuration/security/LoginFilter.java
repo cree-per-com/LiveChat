@@ -43,6 +43,19 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                                             HttpServletResponse response,
                                             FilterChain chain,
                                             Authentication authentication) throws IOException, ServletException {
+        // 기존 JWT 토큰 삭제
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("jwtToken".equals(cookie.getName())) {
+                    cookie.setMaxAge(0); // 쿠키 만료 설정
+                    cookie.setPath("/"); // 쿠키 경로 설정
+                    response.addCookie(cookie); // 응답에 쿠키 추가 (삭제)
+                    break;
+                }
+            }
+        }
+
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
         String username = myUserDetails.getUsername();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();

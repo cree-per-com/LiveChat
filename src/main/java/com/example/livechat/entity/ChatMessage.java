@@ -9,8 +9,6 @@ import lombok.*;
 @Builder
 public class ChatMessage {
     private MessageType type;
-    private String senderName;
-    private String receiverName;
-    private String message;
-    private String date;
+    private String content;
+    private String sender;
 }

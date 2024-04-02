@@ -119,10 +119,15 @@
         margin-top: 10px;
     }
 
+    #messageArea {
+        overflow: auto;
+    }
+
 
     #chat-page {
         position: relative;
         height: 100%;
+        overflow: hidden;
     }
 
     .chat-container {
@@ -135,12 +140,14 @@
         height: calc(100% - 60px);
         max-height: 600px;
         position: relative;
+        overflow: hidden;
     }
 
     #chat-page ul {
         list-style-type: none;
         background-color: #FFF;
         margin: 0;
+        margin-left: 30px;
         overflow: auto;
         overflow-y: scroll;
         padding: 0 20px 0 20px;
@@ -172,7 +179,6 @@
         position: absolute;
         width: 42px;
         height: 42px;
-        overflow: hidden;
         left: 10px;
         display: inline-block;
         vertical-align: middle;
@@ -188,10 +194,12 @@
     #chat-page .chat-message span {
         color: #333;
         font-weight: 600;
+        left: 30px;
     }
 
     #chat-page .chat-message p {
         color: #43464b;
+        left: 30px;
     }
 
     #messageForm .input-group input {
@@ -206,11 +214,6 @@
         margin-left: 5px;
     }
 
-    .chat-header {
-        text-align: center;
-        padding: 15px;
-        border-bottom: 1px solid #ececec;
-    }
 
     .chat-header h2 {
         margin: 0;
@@ -260,9 +263,6 @@
             width: calc(100% - 70px);
         }
 
-        .chat-header {
-            padding: 10px;
-        }
 
         .connecting {
             top: 60px;
@@ -296,9 +296,6 @@
 
 <div id="chat-page" class="hidden">
     <div class="chat-container">
-        <div class="chat-header">
-            <h2>Spring WebSocket Chat Demo - By Alibou</h2>
-        </div>
         <div class="connecting">
             Connecting...
         </div>
@@ -309,9 +306,9 @@
             <div class="form-group">
                 <div class="input-group clearfix">
                     <label for="message">
-                        <input type="text" id="message" placeholder="Type a message..." autocomplete="off" class="form-control"/>
+                        <input type="text" id="message" placeholder="메세지를 입력하세요.." autocomplete="off" class="form-control"/>
                     </label>
-                        <button type="submit" class="primary">Send</button>
+                        <button type="submit" class="primary">전송</button>
                 </div>
             </div>
         </form>
@@ -356,8 +353,8 @@
 
 
     function onConnected() {
-        const authToken = localStorage.getItem('authToken');
-        stompClient.send("/app/authenticate", {}, JSON.stringify({authToken: authToken}));
+        //const authToken = localStorage.getItem('authToken');
+      //  stompClient.send("/app/authenticate", {}, JSON.stringify({authToken: authToken}));
 
         // Subscribe to the Public Topic
         stompClient.subscribe('/topic/public', onMessageReceived);

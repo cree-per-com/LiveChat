@@ -21,13 +21,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws")
                 .setAllowedOriginPatterns("*")
                 .withSockJS()
-                .setInterceptors(new AuthHandshakeInterceptor(new JWTFilter(jwtUtil)));
+                .setInterceptors(new AuthHandshakeInterceptor(jwtUtil));
     }
 
     @Override  //메세지 브로커의 동작을 구성
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/app");
-        registry.enableSimpleBroker("/chatroom","/user");
-        registry.setUserDestinationPrefix("/user");
+        registry.enableSimpleBroker("/topic");
     }
 }

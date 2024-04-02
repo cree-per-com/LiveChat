@@ -1,3 +1,4 @@
+/*
 package com.example.livechat.service;
 
 import com.example.livechat.entity.ChatMessage;
@@ -19,3 +20,6 @@ public class ChatService {
         messagingTemplate.convertAndSendToUser(chatMessage.getReceiverName(),"/private", chatMessage);
     }
 }
+
+
+ */

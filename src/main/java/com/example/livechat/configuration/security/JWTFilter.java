@@ -27,7 +27,7 @@ public class JWTFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
             // 인증이 필요한 경로 목록
-            List<String> protectedPaths = Arrays.asList("/menu", "/privatechat","/ws/**");
+            List<String> protectedPaths = Arrays.asList("/menu", "/privatechat");
 
             // 현재 요청 경로
             String path = request.getRequestURI();

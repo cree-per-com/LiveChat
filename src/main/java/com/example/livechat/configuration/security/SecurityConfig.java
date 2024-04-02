@@ -49,8 +49,8 @@ public class SecurityConfig {
         http.headers(he->he.httpStrictTransportSecurity(se->se.disable()));
         http.authorizeHttpRequests((au)->au
                 .requestMatchers("/","/loginpage","/login","/join","/joinProc"
-                                ,"/error","/username","/favicon.ico").permitAll()
-                .requestMatchers("/menu","/privatechat","/ws/**").hasRole("USER")
+                                ,"/error","/username","/favicon.ico","/ws/**","/app/**").permitAll()
+                .requestMatchers("/menu","/privatechat").hasRole("USER")
                 .anyRequest().authenticated());
         http.sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));

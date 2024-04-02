@@ -23,9 +23,9 @@ public class WebSocketEventListener {
             log.info("{} 님과의 연결이 끊어졌습니다. ", username);
             var chatMessage = ChatMessage.builder()
                               .type(MessageType.LEAVE)
-                               .senderName(username)
+                               .sender(username)
                                 .build();
-            messageTemplate.convertAndSend("/chatroom/public",chatMessage);
+            messageTemplate.convertAndSend("/topic/public",chatMessage);
         }
 
     }
